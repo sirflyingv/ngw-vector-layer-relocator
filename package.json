@@ -1,0 +1,20 @@
+{
+  "name": "resourse-relocator",
+  "version": "1.0.0",
+  "description": "NextGIS Web resource relocator",
+  "main": "server.ts",
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node dist/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "typescript": "^5.1.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^20.3.1"
+  }
+}
