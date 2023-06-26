@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Form, Card, Container, Accordion } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -8,30 +8,42 @@ import { useTranslation } from 'react-i18next';
 
 function App() {
   const { t } = useTranslation();
+  const [isPending, setIsPending] = useState<boolean>();
 
   const formik = useFormik({
     initialValues: {
       sourceNgwURL: 'demo.nextgis.com',
       sourceLayerId: '5573',
       sourceLogin: '',
-      sourcePassword: ''
-      // targetNgw: '',
-      // targetGroupId: ''
+      sourcePassword: '',
+      targetNGWURL: 'sandbox.nextgis.com',
+      targetGroupId: '2962',
+      targetLogin: '',
+      targetPassword: ''
     },
     validationSchema: yup.object({
       sourceNgwURL: yup.string().required(),
-      sourceLayerId: yup.string().required()
-      // sourceLogin: yup.string(),
-      // sourcePassword: yup.string()
-      // targetNgw: yup.string().required(),
-      // targetGroupId: yup.string().required()
+      sourceLayerId: yup.string().required(),
+      sourceLogin: yup.string(),
+      sourcePassword: yup.string(),
+      targetNGWURL: yup.string().required(),
+      targetGroupId: yup.string().required(),
+      targetLogin: yup.string(),
+      targetPassword: yup.string()
     }),
     onSubmit: async (data) => {
       console.log(data);
-      const kek = await axios.post('/test', data);
+      setIsPending(true);
+      const kek = await axios.post('/transfer', data);
+      setIsPending(false);
       console.log(kek);
     }
   });
+
+  const previewLayer = async () => {
+    const vectorLayer = await axios.post('/preview', formik.values);
+    console.log(vectorLayer);
+  };
 
   return (
     <div className="d-flex flex-column h-100">
@@ -41,8 +53,9 @@ function App() {
             <div className="d-flex justify-content-center">
               <h1>{t('header')}</h1>
             </div>
-            <div className="d-flex">
-              <Form className="p-3" onSubmit={formik.handleSubmit}>
+            <Form className="p-3" onSubmit={formik.handleSubmit}>
+              <div className="d-flex justify-content-around">
+                {/* source details */}
                 <Card>
                   <Card.Header as="h5">{t('sourceForm.header')}</Card.Header>
                   <Card.Body>
@@ -71,7 +84,7 @@ function App() {
                         placeholder={'1337'} // add to locales
                       />
                     </Form.Group>
-                    <Accordion className="mb-3 p-1 w-100">
+                    <Accordion className="mb-3 p-1">
                       <Accordion.Item eventKey="0">
                         <Accordion.Header>
                           {t('sourceForm.authHeader')}
@@ -110,32 +123,96 @@ function App() {
                     </Accordion>
                     <div className="p-1">
                       <Button
+                        onClick={previewLayer}
+                        type="button"
                         className="mb-2 w-100"
                         variant="secondary"
-                        type="submit"
                       >
                         {t('sourceForm.preview')}
                       </Button>
                     </div>
                   </Card.Body>
                 </Card>
-                <Button variant="primary" type="submit">
+                {/* Target details  */}
+                <Card>
+                  <Card.Header as="h5">{t('targetForm.header')}</Card.Header>
+                  <Card.Body>
+                    <Form.Group className="mb-3 p-1" controlId="targetNGWURL">
+                      <Form.Label>{t('targetForm.targetNGWURL')}</Form.Label>{' '}
+                      <Form.Control
+                        autoFocus
+                        name="targetNGWURL"
+                        onChange={formik.handleChange}
+                        value={formik.values.targetNGWURL}
+                        onBlur={formik.handleBlur}
+                        type="text"
+                        required
+                        placeholder={'sandbox.nextgis.com'} // add to locales
+                      />
+                    </Form.Group>
+                    <Form.Group className="mb-3 p-1" controlId="targetGroupId">
+                      <Form.Label>{t('targetForm.targetGroupId')}</Form.Label>
+                      <Form.Control
+                        name="targetGroupId"
+                        onChange={formik.handleChange}
+                        value={formik.values.targetGroupId}
+                        onBlur={formik.handleBlur}
+                        type="text"
+                        required
+                        placeholder={'2962'} // add to locales
+                      />
+                    </Form.Group>
+                    <Accordion className="mb-3 p-1">
+                      <Accordion.Item eventKey="0">
+                        <Accordion.Header>
+                          {t('targetForm.authHeader')}
+                        </Accordion.Header>
+                        <Accordion.Body>
+                          <Form.Group
+                            className="mb-3 p-1"
+                            controlId="targetLogin"
+                          >
+                            <Form.Label>{t('targetForm.username')}</Form.Label>{' '}
+                            <Form.Control
+                              name="targetLogin"
+                              onChange={formik.handleChange}
+                              value={formik.values.targetLogin}
+                              onBlur={formik.handleBlur}
+                              type="text"
+                              placeholder="" // add to locales
+                            />
+                          </Form.Group>
+                          <Form.Group
+                            className="mb-3 p-1"
+                            controlId="targetPassword"
+                          >
+                            <Form.Label>{t('targetForm.password')}</Form.Label>
+                            <Form.Control
+                              name="targetPassword"
+                              onChange={formik.handleChange}
+                              value={formik.values.targetPassword}
+                              onBlur={formik.handleBlur}
+                              type="password"
+                              placeholder="" // add to locales
+                            />
+                          </Form.Group>
+                        </Accordion.Body>
+                      </Accordion.Item>
+                    </Accordion>
+                  </Card.Body>
+                </Card>
+              </div>
+              <div className="d-flex justify-content-center">
+                <Button
+                  className="mt-3"
+                  variant="primary"
+                  type="submit"
+                  disabled={isPending}
+                >
                   {t('submit')}
                 </Button>
-              </Form>
-
-              {/* <Card>
-                <Card.Header as="h5">{t('targetForm.header')}</Card.Header>
-                <Card.Body>
-                  <Card.Title>Special title treatment</Card.Title>
-                  <Card.Text>
-                    With supporting text below as a natural lead-in to
-                    additional content.
-                  </Card.Text>
-                  <Button variant="primary">Go somewhere</Button>
-                </Card.Body>
-              </Card> */}
-            </div>
+              </div>
+            </Form>
           </Container>
         </div>
       </div>

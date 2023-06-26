@@ -14,6 +14,7 @@ const ru = {
       header: 'Целевой сервер',
       targetNGWURL: 'Адрес целевого сервера',
       targetGroupId: 'ID целевой группы',
+      authHeader: 'Авторизация',
       username: 'Имя пользователя',
       password: 'Пароль'
     },
