@@ -1,6 +1,6 @@
 const ru = {
   translation: {
-    header: 'Релокатор ресурсов',
+    header: 'Перенос векторных слоёв',
     sourceForm: {
       header: 'Источник',
       sourceNGWURL: 'Адрес исходного сервера',

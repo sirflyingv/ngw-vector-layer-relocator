@@ -32,11 +32,10 @@ function App() {
       targetPassword: yup.string()
     }),
     onSubmit: async (data) => {
-      console.log(data);
       setIsPending(true);
-      const kek = await axios.post('/transfer', data);
+      const res = await axios.post('/transfer', data);
       setIsPending(false);
-      console.log(kek);
+      console.log(res);
     }
   });
 
@@ -49,14 +48,14 @@ function App() {
     <div className="d-flex flex-column h-100">
       <div className="row justify-content-center align-content-center h-100">
         <div className="col-12 col-md-8 col-xxl-6">
-          <Container className="h-100 my-4 overflow-hidden rounded shadow">
-            <div className="d-flex justify-content-center">
+          <Container className="my-4 overflow-hidden rounded shadow">
+            <div className="d-flex justify-content-center pt-3">
               <h1>{t('header')}</h1>
             </div>
             <Form className="p-3" onSubmit={formik.handleSubmit}>
-              <div className="d-flex justify-content-around">
+              <div className="d-flex justify-content-around gap-3">
                 {/* source details */}
-                <Card>
+                <Card className="w-100">
                   <Card.Header as="h5">{t('sourceForm.header')}</Card.Header>
                   <Card.Body>
                     <Form.Group className="mb-3 p-1" controlId="sourceNGWURL">
@@ -134,13 +133,12 @@ function App() {
                   </Card.Body>
                 </Card>
                 {/* Target details  */}
-                <Card>
+                <Card className="w-100">
                   <Card.Header as="h5">{t('targetForm.header')}</Card.Header>
                   <Card.Body>
                     <Form.Group className="mb-3 p-1" controlId="targetNGWURL">
                       <Form.Label>{t('targetForm.targetNGWURL')}</Form.Label>{' '}
                       <Form.Control
-                        autoFocus
                         name="targetNGWURL"
                         onChange={formik.handleChange}
                         value={formik.values.targetNGWURL}
@@ -204,7 +202,7 @@ function App() {
               </div>
               <div className="d-flex justify-content-center">
                 <Button
-                  className="mt-3"
+                  className="mt-3 w-100"
                   variant="primary"
                   type="submit"
                   disabled={isPending}

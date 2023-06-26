@@ -3,6 +3,7 @@
 }
 
 .accordion-button:focus {
+  background-color: #c2cbce !important;
   box-shadow: none;
 }
 
