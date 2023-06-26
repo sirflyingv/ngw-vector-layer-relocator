@@ -1,8 +1,7 @@
 import React from 'react';
-import { Button, Form, Card, Container } from 'react-bootstrap';
+import { Button, Form, Card, Container, Accordion } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 
 import { useTranslation } from 'react-i18next';
@@ -13,13 +12,17 @@ function App() {
   const formik = useFormik({
     initialValues: {
       sourceNgwURL: 'demo.nextgis.com',
-      sourceLayerId: '5573'
+      sourceLayerId: '5573',
+      sourceLogin: '',
+      sourcePassword: ''
       // targetNgw: '',
       // targetGroupId: ''
     },
     validationSchema: yup.object({
       sourceNgwURL: yup.string().required(),
       sourceLayerId: yup.string().required()
+      // sourceLogin: yup.string(),
+      // sourcePassword: yup.string()
       // targetNgw: yup.string().required(),
       // targetGroupId: yup.string().required()
     }),
@@ -39,10 +42,10 @@ function App() {
               <h1>{t('header')}</h1>
             </div>
             <div className="d-flex">
-              <Card>
-                <Card.Header as="h5">{t('sourceForm.header')}</Card.Header>
-                <Card.Body>
-                  <Form className="p-3" onSubmit={formik.handleSubmit}>
+              <Form className="p-3" onSubmit={formik.handleSubmit}>
+                <Card>
+                  <Card.Header as="h5">{t('sourceForm.header')}</Card.Header>
+                  <Card.Body>
                     <Form.Group className="mb-3 p-1" controlId="sourceNGWURL">
                       <Form.Label>{t('sourceForm.sourceNGWURL')}</Form.Label>{' '}
                       <Form.Control
@@ -68,13 +71,58 @@ function App() {
                         placeholder={'1337'} // add to locales
                       />
                     </Form.Group>
-                    {/* <Button variant="primary">Go somewhere</Button> */}
-                    <Button variant="primary" type="submit">
-                      {t('submit')}
-                    </Button>
-                  </Form>
-                </Card.Body>
-              </Card>
+                    <Accordion className="mb-3 p-1 w-100">
+                      <Accordion.Item eventKey="0">
+                        <Accordion.Header>
+                          {t('sourceForm.authHeader')}
+                        </Accordion.Header>
+                        <Accordion.Body>
+                          <Form.Group
+                            className="mb-3 p-1"
+                            controlId="sourceLogin"
+                          >
+                            <Form.Label>{t('sourceForm.username')}</Form.Label>{' '}
+                            <Form.Control
+                              name="sourceLogin"
+                              onChange={formik.handleChange}
+                              value={formik.values.sourceLogin}
+                              onBlur={formik.handleBlur}
+                              type="text"
+                              placeholder="" // add to locales
+                            />
+                          </Form.Group>
+                          <Form.Group
+                            className="mb-3 p-1"
+                            controlId="sourcePassword"
+                          >
+                            <Form.Label>{t('sourceForm.password')}</Form.Label>
+                            <Form.Control
+                              name="sourcePassword"
+                              onChange={formik.handleChange}
+                              value={formik.values.sourcePassword}
+                              onBlur={formik.handleBlur}
+                              type="password"
+                              placeholder="" // add to locales
+                            />
+                          </Form.Group>
+                        </Accordion.Body>
+                      </Accordion.Item>
+                    </Accordion>
+                    <div className="p-1">
+                      <Button
+                        className="mb-2 w-100"
+                        variant="secondary"
+                        type="submit"
+                      >
+                        {t('sourceForm.preview')}
+                      </Button>
+                    </div>
+                  </Card.Body>
+                </Card>
+                <Button variant="primary" type="submit">
+                  {t('submit')}
+                </Button>
+              </Form>
 
               {/* <Card>
                 <Card.Header as="h5">{t('targetForm.header')}</Card.Header>

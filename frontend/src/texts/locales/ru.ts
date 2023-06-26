@@ -5,8 +5,10 @@ const ru = {
       header: 'Источник',
       sourceNGWURL: 'Адрес исходного сервера',
       sourceLayerId: 'ID векторного слоя',
+      authHeader: 'Авторизация',
       username: 'Имя пользователя',
-      password: 'Пароль'
+      password: 'Пароль',
+      preview: 'Предпросмотр'
     },
     targetForm: {
       header: 'Целевой сервер',

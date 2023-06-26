@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom/client';
 import i18next from 'i18next';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import resources from './texts/locales';
-
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './custom.css';
 import App from './App';
 
 export const AuthContext = createContext({});
