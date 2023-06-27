@@ -40,12 +40,12 @@ function App() {
       targetPassword: ''
     },
     validationSchema: yup.object({
-      sourceNgwURL: yup.string().required(),
-      sourceLayerId: yup.string().required(),
+      sourceNgwURL: yup.string().required(), // todo process URL as URL
+      sourceLayerId: yup.number().required(),
       sourceLogin: yup.string(),
       sourcePassword: yup.string(),
       targetNGWURL: yup.string().required(),
-      targetGroupId: yup.string().required(),
+      targetGroupId: yup.number().required(),
       targetLogin: yup.string(),
       targetPassword: yup.string()
     }),
@@ -245,6 +245,17 @@ function App() {
                         </Accordion.Body>
                       </Accordion.Item>
                     </Accordion>
+                    {/* <div className="p-1">
+                      <Button
+                        // onClick={previewLayer}
+                        type="button"
+                        className="mb-2 w-100"
+                        variant="secondary"
+                        disabled={!isFinished && !isFailed}
+                      >
+                        {'ff'}
+                      </Button>
+                    </div> */}
                   </Card.Body>
                 </Card>
               </div>
