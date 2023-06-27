@@ -1,9 +1,6 @@
-import express, { Express, Request, Response, NextFunction } from 'express';
+import express, { Express, ErrorRequestHandler, Request, Response, NextFunction } from 'express';
 import path from 'path';
 import routes from './routes';
-import ApplicationError from './errors/applicationErrors';
-
-import errorHandler from './controllers/errorHandler';
 
 const app: Express = express();
 const port = 3000;
@@ -21,6 +18,12 @@ app.use(
 );
 
 app.use(routes);
+
+// Error handler
+const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error(err);
+  res.status(500).json({ error: 'Internal server error' });
+};
 
 app.use(errorHandler);
 

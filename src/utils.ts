@@ -25,26 +25,18 @@ const getVectorLayerData = async (ngwConnector: NgwConnector, layerId: number) =
 // };
 
 const getResourceCLS = async (ngwConnector: NgwConnector | NgwUploader, resourceId: number) => {
-  const { resource }: any = await ngwConnector.getResource(resourceId);
-  return resource.cls;
+  try {
+    const { resource }: any = await ngwConnector.getResource(resourceId);
+    return resource.cls;
+  } catch (error) {
+    throw error;
+  }
 };
 
 const catchAsync = function (fn: Function) {
   return (req: Request, res: Response, next: NextFunction) => {
     fn(req, res, next).catch(next);
   };
-};
-
-const wrapRoute = (fn: Function) => async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    // run controllers logic
-    await fn(req, res, next);
-  } catch (e) {
-    console.log('in wrap >>>', e);
-    // if an exception is raised, do not send any response
-    // just continue performing the middleware chain
-    next(e);
-  }
 };
 
 // from nglink
@@ -55,10 +47,4 @@ const handleError = (res: Response, er: unknown) => {
   });
 };
 
-export {
-  getVectorLayerData,
-  /* uploadVectorLayer,*/ getResourceCLS,
-  catchAsync,
-  wrapRoute,
-  handleError
-};
+export { getVectorLayerData, getResourceCLS, catchAsync, handleError };
