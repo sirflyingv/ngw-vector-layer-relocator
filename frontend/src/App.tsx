@@ -25,7 +25,8 @@ function App() {
     TARGET_IS_NOT_GROUP: 'targetIsNotGroup',
     ALREADY_EXISTS: 'alreadyExists',
     SOURCE_RESOURCE_NOT_FOUND: 'sourceResourceNotFound',
-    TARGET_RESOURCE_NOT_FOUND: 'targetResourceNotFound'
+    TARGET_RESOURCE_NOT_FOUND: 'targetResourceNotFound',
+    other: 'other'
   };
 
   const formik = useFormik({
@@ -62,14 +63,10 @@ function App() {
           setMessageKey('success');
         } else if (res.data.status === 'failed') {
           setIsFailed(true);
-          const { error } = res.data;
-          setMessageKey(messageMapping[error]);
-        } else {
-          setIsFailed(true);
-          setMessageKey('other');
+          const { message } = res.data;
+          setMessageKey(messageMapping[message || 'other']);
         }
       } catch (error) {
-        console.log('in catch >>>', error);
         setIsFinished(true);
         setIsFailed(true);
 

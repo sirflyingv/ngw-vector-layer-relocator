@@ -1,6 +1,7 @@
 import express, { Express, ErrorRequestHandler, Request, Response, NextFunction } from 'express';
 import path from 'path';
 import routes from './routes';
+import { handleError } from './utils';
 
 const app: Express = express();
 const port = 3000;
@@ -19,13 +20,7 @@ app.use(
 
 app.use(routes);
 
-// Error handler
-const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err);
-  res.status(500).json({ error: 'Internal server error' });
-};
-
-app.use(errorHandler);
+app.use(handleError);
 
 app.listen(port, () => {
   console.log(`[Server]: I am running at http://localhost:${port}`);
