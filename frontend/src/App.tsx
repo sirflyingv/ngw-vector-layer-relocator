@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Button, Form, Card, Container, Accordion } from 'react-bootstrap';
+import {
+  Button,
+  Form,
+  Card,
+  Container,
+  Accordion,
+  Alert
+} from 'react-bootstrap';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
@@ -9,6 +16,17 @@ import { useTranslation } from 'react-i18next';
 function App() {
   const { t } = useTranslation();
   const [isPending, setIsPending] = useState<boolean>();
+  const [isFinished, setIsFinished] = useState<boolean>(false);
+  const [isFailed, setIsFailed] = useState<boolean>();
+  const [messageKey, setMessageKey] = useState<string>();
+
+  const messageMapping: { [key: string]: string } = {
+    SOURCE_IS_NOT_VECTOR: 'sourceIsNotVector',
+    TARGET_IS_NOT_GROUP: 'targetIsNotGroup',
+    ALREADY_EXISTS: 'alreadyExists',
+    SOURCE_RESOURCE_NOT_FOUND: 'sourceResourceNotFound',
+    TARGET_RESOURCE_NOT_FOUND: 'targetResourceNotFound'
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -32,10 +50,40 @@ function App() {
       targetPassword: yup.string()
     }),
     onSubmit: async (data) => {
-      setIsPending(true);
-      const res = await axios.post('/transfer', data);
-      setIsPending(false);
-      console.log(res);
+      setIsFinished(false);
+      try {
+        setIsPending(true);
+        const res = await axios.post('/transfer', data);
+        setIsPending(false);
+        setIsFinished(true);
+
+        if (res.data.status === 'success') {
+          setIsFailed(false);
+          setMessageKey('success');
+        } else if (res.data.status === 'failed') {
+          setIsFailed(true);
+          const { error } = res.data;
+          setMessageKey(messageMapping[error]);
+        } else {
+          setIsFailed(true);
+          setMessageKey('other');
+        }
+      } catch (error) {
+        console.log('in catch >>>', error);
+        setIsFinished(true);
+        setIsFailed(true);
+
+        // some tricky workaround on TypeScript catch(error) nuances
+        let message;
+        if (error instanceof Error) message = error.message;
+        else message = String(error);
+        if (message === 'Network Error') {
+          setMessageKey('networkError');
+        } else {
+          setMessageKey('other');
+        }
+        setIsPending(false);
+      }
     }
   });
 
@@ -207,9 +255,17 @@ function App() {
                   type="submit"
                   disabled={isPending}
                 >
-                  {t('submit')}
+                  {isPending ? t('submitPending') : t('submit')}
                 </Button>
               </div>
+              {isFinished ? (
+                <Alert
+                  className="mt-3 mb-1 py-2"
+                  variant={isFailed ? 'danger' : 'success'}
+                >
+                  {t(`finishMessage.${messageKey}`)}
+                </Alert>
+              ) : null}
             </Form>
           </Container>
         </div>
