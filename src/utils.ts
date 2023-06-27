@@ -3,14 +3,18 @@ import NgwUploader from '@nextgis/ngw-uploader';
 import { NextFunction, Request, Response } from 'express';
 
 const getVectorLayerData = async (ngwConnector: NgwConnector, layerId: number) => {
-  const { resource }: any = await ngwConnector.getResource(layerId);
-  const vectorLayerGeoJSON: any = await ngwConnector.get('feature_layer.geojson', null, {
-    id: layerId
-  });
-  return {
-    ngwResourceData: resource,
-    vectorLayerGeoJSON
-  };
+  try {
+    const { resource }: any = await ngwConnector.getResource(layerId);
+    const vectorLayerGeoJSON: any = await ngwConnector.get('feature_layer.geojson', null, {
+      id: layerId
+    });
+    return {
+      ngwResourceData: resource,
+      vectorLayerGeoJSON
+    };
+  } catch (error) {
+    throw error;
+  }
 };
 
 // const uploadVectorLayer = async (
