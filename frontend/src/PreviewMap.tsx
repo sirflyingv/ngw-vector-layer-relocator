@@ -1,15 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 import { Card } from 'react-bootstrap';
 import NgwMap from '@nextgis/ngw-leaflet';
-// import { GeoJsonObject } from 'geojson';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const PreviewMap = (vectorLayer: any) => {
+const PreviewMap = (props: any) => {
+  const { vectorLayer } = props;
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const mapInstanceRef = useRef<NgwMap | null | any>(null);
 
-  console.log(vectorLayer.vectorLayer.layer);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mapInstanceRef = useRef<NgwMap | any>(null);
 
   useEffect(() => {
     const mapContainer = mapContainerRef.current;
@@ -20,8 +19,9 @@ const PreviewMap = (vectorLayer: any) => {
         qmsId: 448
       }).then((NgwMap) => {
         NgwMap.addGeoJsonLayer({
-          data: vectorLayer.vectorLayer.layer,
-          paint: { color: 'green', radius: 6 }
+          data: vectorLayer.geojson,
+          paint: { color: 'green', radius: 6 }, // hardcode
+          fit: true
         });
       });
     }

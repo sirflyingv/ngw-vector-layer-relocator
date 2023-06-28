@@ -1,18 +1,10 @@
 import React, { useState } from 'react';
-import { Button, Form, Card, Container, Alert } from 'react-bootstrap';
+import { Button, Form, Card, Container, Alert, Spinner } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
 import PreviewMap from './PreviewMap';
-
-// import ReactNgwMap from '@nextgis/react-ngw-leaflet';
-
 import { useTranslation } from 'react-i18next';
-// import { GeoJsonObject } from 'geojson';
-
-// const mapOptions = {
-//   qmsId: 448
-// };
 
 function App() {
   const { t } = useTranslation();
@@ -21,7 +13,7 @@ function App() {
   const [isFailed, setIsFailed] = useState<boolean>();
   const [previewLoaded, setpreviewLoaded] = useState<boolean>(false);
   const [messageKey, setMessageKey] = useState<string>();
-  const [vectorLayer, setVectorLayer] = useState();
+  const [previewLayer, setPreviewLayer] = useState<unknown>();
 
   const messageMapping: { [key: string]: string } = {
     SOURCE_IS_NOT_VECTOR: 'sourceIsNotVector',
@@ -92,18 +84,26 @@ function App() {
     }
   });
 
-  const previewLayer = async () => {
+  const getTargetGroupURL = () => {
+    const url = new URL(
+      `resource/${formik.values.targetGroupId}`,
+      formik.values.targetNGWURL
+    );
+    return url.toString();
+  };
+
+  const loadPreviewLayer = async () => {
     setIsFinished(false);
     try {
       setIsPending(true);
+      setpreviewLoaded(false);
       const res = await axios.post('/preview', formik.values);
       setIsPending(false);
 
       if (res.data.status === 'success') {
         setpreviewLoaded(true);
         // ================================================
-        console.log(res);
-        setVectorLayer(res.data.data);
+        setPreviewLayer(res.data.data);
         // ================================================
       } else if (res.data.status === 'failed') {
         setIsFinished(true);
@@ -132,7 +132,7 @@ function App() {
     <div className="d-flex flex-column h-100">
       <div className="row justify-content-center align-content-top h-100">
         <div className="col-12 col-md-8 col-xxl-6">
-          <Container className="my-5 overflow-hidden rounded shadow">
+          <Container className="mt-5 mb-4 overflow-hidden rounded shadow">
             <div className="d-flex justify-content-center pt-3">
               <h1>{t('header')}</h1>
             </div>
@@ -183,11 +183,11 @@ function App() {
                     </Form.Group>
                     <div className="p-1">
                       <Button
-                        onClick={previewLayer}
+                        onClick={loadPreviewLayer}
                         type="button"
                         className="mb-2 w-100"
                         variant="secondary"
-                        disabled={isPending || previewLoaded}
+                        disabled={isPending}
                       >
                         {t('sourceForm.preview')}
                       </Button>
@@ -236,6 +236,17 @@ function App() {
                         {formik.errors.targetGroupId}
                       </Form.Control.Feedback>
                     </Form.Group>
+                    <div className="p-1">
+                      <Button
+                        href={getTargetGroupURL()}
+                        target="_blank"
+                        type="button"
+                        className="mb-2 w-100"
+                        variant="secondary"
+                      >
+                        {t('targetForm.linkToGroup')}
+                      </Button>
+                    </div>
                   </Card.Body>
                 </Card>
               </div>
@@ -258,13 +269,13 @@ function App() {
                 </Alert>
               ) : null}
             </Form>
-            {/* {previewLoaded ? (
-              <Card className="mx-3 mb-4 map-container">
-                <ReactNgwMap className="map-container" {...mapOptions} />{' '}
-              </Card>
-            ) : null} */}
-            {previewLoaded ? <PreviewMap vectorLayer={vectorLayer} /> : null}
+            {previewLoaded ? <PreviewMap vectorLayer={previewLayer} /> : null}
           </Container>
+          {isPending && (
+            <div className="d-flex justify-content-center">
+              <Spinner variant="info" animation="border" />
+            </div>
+          )}
         </div>
       </div>
     </div>

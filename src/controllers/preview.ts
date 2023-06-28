@@ -31,7 +31,6 @@ const previewLayer = catchAsync(async (req: Request, res: Response, next: NextFu
       connector: sourceNgwConnector,
       resourceId: sourceLayerId
     });
-    console.log(JSON.stringify(vectorLayerGeoJSON));
 
     const { resource }: any = await sourceNgwConnector.getResource(Number(sourceLayerId));
     // const vectorLayerGeoJSON: any = await sourceNgwConnector.get('feature_layer.geojson', null, {
@@ -44,7 +43,7 @@ const previewLayer = catchAsync(async (req: Request, res: Response, next: NextFu
       status: 'success',
       data: {
         name,
-        layer: vectorLayerGeoJSON
+        geojson: vectorLayerGeoJSON
       }
     });
   } catch (error) {

@@ -1,16 +1,3 @@
-.accordion-button {
-  background-color: #cff4fc !important;
-}
-
-.accordion-button:focus {
-  background-color: #c2cbce !important;
-  box-shadow: none;
-}
-
-.accordion-button:not(.collapsed) {
-  color: #212529;
-}
-
 .map-container {
   height: 300px;
 }

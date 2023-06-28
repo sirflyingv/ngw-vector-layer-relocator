@@ -22,6 +22,7 @@ const ru = {
       authHeader: 'Авторизация',
       username: 'Имя пользователя',
       password: 'Пароль',
+      linkToGroup: 'Перейти на страницу группы',
       error: {
         required: 'Обязательное поле',
         url: 'Должен быть валидным URL',
