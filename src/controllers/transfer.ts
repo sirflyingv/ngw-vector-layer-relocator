@@ -72,7 +72,7 @@ const transferVectorLayer = catchAsync(async (req: Request, res: Response, next:
     const name = resource.display_name;
 
     await targetNgwUploader
-      .uploadVector({ file, name }, { parentId: Number(targetGroupId), paint: null })
+      .uploadVector({ file, name }, { parentId: Number(targetGroupId), paint: {} })
       .then((response) => {
         return res.send({ status: 'success', response });
       })

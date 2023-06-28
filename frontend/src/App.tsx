@@ -5,7 +5,14 @@ import * as yup from 'yup';
 import axios from 'axios';
 import PreviewMap from './PreviewMap';
 
+// import ReactNgwMap from '@nextgis/react-ngw-leaflet';
+
 import { useTranslation } from 'react-i18next';
+// import { GeoJsonObject } from 'geojson';
+
+// const mapOptions = {
+//   qmsId: 448
+// };
 
 function App() {
   const { t } = useTranslation();
@@ -14,6 +21,7 @@ function App() {
   const [isFailed, setIsFailed] = useState<boolean>();
   const [previewLoaded, setpreviewLoaded] = useState<boolean>(false);
   const [messageKey, setMessageKey] = useState<string>();
+  const [vectorLayer, setVectorLayer] = useState();
 
   const messageMapping: { [key: string]: string } = {
     SOURCE_IS_NOT_VECTOR: 'sourceIsNotVector',
@@ -93,6 +101,10 @@ function App() {
 
       if (res.data.status === 'success') {
         setpreviewLoaded(true);
+        // ================================================
+        console.log(res);
+        setVectorLayer(res.data.data);
+        // ================================================
       } else if (res.data.status === 'failed') {
         setIsFinished(true);
         setIsFailed(true);
@@ -246,9 +258,12 @@ function App() {
                 </Alert>
               ) : null}
             </Form>
-            {previewLoaded ? (
-              <PreviewMap name={'pippa'} layer={{ pip: 'ppa' }} />
-            ) : null}
+            {/* {previewLoaded ? (
+              <Card className="mx-3 mb-4 map-container">
+                <ReactNgwMap className="map-container" {...mapOptions} />{' '}
+              </Card>
+            ) : null} */}
+            {previewLoaded ? <PreviewMap vectorLayer={vectorLayer} /> : null}
           </Container>
         </div>
       </div>

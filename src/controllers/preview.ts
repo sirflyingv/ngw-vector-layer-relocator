@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import NgwConnector from '@nextgis/ngw-connector';
 import { catchAsync } from '../utils';
+import { /*fetchNgwLayerFeatures, */ fetchNgwLayerFeatureCollection } from '@nextgis/ngw-kit';
 
 const previewLayer = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const { sourceNgwURL, sourceLayerId } = req.body;
@@ -26,10 +27,16 @@ const previewLayer = catchAsync(async (req: Request, res: Response, next: NextFu
       }
     }
 
-    const { resource }: any = await sourceNgwConnector.getResource(Number(sourceLayerId));
-    const vectorLayerGeoJSON: any = await sourceNgwConnector.get('feature_layer.geojson', null, {
-      id: Number(sourceLayerId)
+    const vectorLayerGeoJSON = await fetchNgwLayerFeatureCollection({
+      connector: sourceNgwConnector,
+      resourceId: sourceLayerId
     });
+    console.log(JSON.stringify(vectorLayerGeoJSON));
+
+    const { resource }: any = await sourceNgwConnector.getResource(Number(sourceLayerId));
+    // const vectorLayerGeoJSON: any = await sourceNgwConnector.get('feature_layer.geojson', null, {
+    //   id: Number(sourceLayerId)
+    // });
 
     const name = resource.display_name;
 

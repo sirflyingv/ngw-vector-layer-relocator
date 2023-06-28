@@ -1,29 +1,35 @@
-import React /*, { useEffect, useRef } */ from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Card } from 'react-bootstrap';
 import NgwMap from '@nextgis/ngw-leaflet';
-// import { useTranslation } from 'react-i18next';
+// import { GeoJsonObject } from 'geojson';
 
-const PreviewMap = (props: { name: string; layer: object }) => {
-  //   const { t } = useTranslation();
-  const { name, layer } = props;
-  console.log(layer, name);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const PreviewMap = (vectorLayer: any) => {
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mapInstanceRef = useRef<NgwMap | null | any>(null);
 
-  // const map = useRef<HTMLDivElement | null>(null);
+  console.log(vectorLayer.vectorLayer.layer);
 
-  // useEffect(() => {
-  //   if (map.current) {
-  //     map.current.classList.add('test-height');
-  //   }
-  // });
+  useEffect(() => {
+    const mapContainer = mapContainerRef.current;
 
-  NgwMap.create({
-    target: 'map',
-    qmsId: 448
-  });
+    if (mapContainer && !mapInstanceRef.current) {
+      mapInstanceRef.current = NgwMap.create({
+        target: mapContainer,
+        qmsId: 448
+      }).then((NgwMap) => {
+        NgwMap.addGeoJsonLayer({
+          data: vectorLayer.vectorLayer.layer,
+          paint: { color: 'green', radius: 6 }
+        });
+      });
+    }
+  }, []);
 
   return (
     <Card className="mx-3 mb-4 map-container">
-      <div id="map" className="map-container"></div>
+      <div ref={mapContainerRef} className="map-container"></div>
     </Card>
   );
 };
