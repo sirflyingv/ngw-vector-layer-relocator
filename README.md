@@ -32,4 +32,10 @@ npm run build
 npm start
 ```
 
+или
+
+```
+make it-happen
+```
+
 Далее открыть localhost:3000 в браузере
