@@ -1,4 +1,4 @@
-it-happen:
+it-work:
 	npm run install-all
 	npm run build
 	npm start

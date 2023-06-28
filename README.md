@@ -35,7 +35,7 @@ npm start
 или
 
 ```
-make it-happen
+make it-work
 ```
 
 Далее открыть localhost:3000 в браузере
