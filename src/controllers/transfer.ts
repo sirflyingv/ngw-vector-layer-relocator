@@ -84,7 +84,6 @@ const transferVectorLayer = catchAsync(async (req: Request, res: Response, next:
         return res.status(500).send(error);
       });
   } catch (error) {
-    // next(error);
     return res.status(500).send(error);
   }
 });

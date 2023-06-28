@@ -102,9 +102,7 @@ function App() {
 
       if (res.data.status === 'success') {
         setpreviewLoaded(true);
-        // ================================================
         setPreviewLayer(res.data.data);
-        // ================================================
       } else if (res.data.status === 'failed') {
         setIsFinished(true);
         setIsFailed(true);

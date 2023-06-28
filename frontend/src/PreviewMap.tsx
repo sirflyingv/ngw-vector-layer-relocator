@@ -6,13 +6,11 @@ import NgwMap from '@nextgis/ngw-leaflet';
 const PreviewMap = (props: any) => {
   const { vectorLayer } = props;
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mapInstanceRef = useRef<NgwMap | any>(null);
 
   useEffect(() => {
     const mapContainer = mapContainerRef.current;
-
     if (mapContainer && !mapInstanceRef.current) {
       mapInstanceRef.current = NgwMap.create({
         target: mapContainer,

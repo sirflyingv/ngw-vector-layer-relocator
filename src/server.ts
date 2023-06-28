@@ -1,4 +1,4 @@
-import express, { Express, ErrorRequestHandler, Request, Response, NextFunction } from 'express';
+import express, { Express } from 'express';
 import path from 'path';
 import routes from './routes';
 import { handleError } from './utils';

@@ -27,22 +27,18 @@ const previewLayer = catchAsync(async (req: Request, res: Response, next: NextFu
       }
     }
 
+    // const { resource }: any = await sourceNgwConnector.getResource(Number(sourceLayerId));
+    // const name = resource.display_name;
+
     const vectorLayerGeoJSON = await fetchNgwLayerFeatureCollection({
       connector: sourceNgwConnector,
       resourceId: sourceLayerId
     });
 
-    const { resource }: any = await sourceNgwConnector.getResource(Number(sourceLayerId));
-    // const vectorLayerGeoJSON: any = await sourceNgwConnector.get('feature_layer.geojson', null, {
-    //   id: Number(sourceLayerId)
-    // });
-
-    const name = resource.display_name;
-
     res.send({
       status: 'success',
       data: {
-        name,
+        // name,
         geojson: vectorLayerGeoJSON
       }
     });
