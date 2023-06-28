@@ -2,12 +2,14 @@ import express, { Express, ErrorRequestHandler, Request, Response, NextFunction 
 import path from 'path';
 import routes from './routes';
 import { handleError } from './utils';
+import morgan from 'morgan';
 
 const app: Express = express();
 const port = 3000;
 
 const frontendPath = path.join(__dirname, '../dist/frontend/');
 
+app.use(morgan('tiny'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
