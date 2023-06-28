@@ -10,3 +10,7 @@
 .accordion-button:not(.collapsed) {
   color: #212529;
 }
+
+.map-container {
+  height: 300px;
+}

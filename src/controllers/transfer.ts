@@ -17,17 +17,17 @@ const transferVectorLayer = catchAsync(async (req: Request, res: Response, next:
 
   try {
     const sourceNgwConnector = new NgwConnector({
-      baseUrl: `https://${sourceNgwURL}`,
+      baseUrl: sourceNgwURL,
       auth: { login: sourceLogin, password: soursePassword }
     });
 
     const targetNgwConnector = new NgwConnector({
-      baseUrl: `https://${targetNGWURL}`,
+      baseUrl: targetNGWURL,
       auth: { login: targetLogin, password: targetPassword }
     });
 
     const targetNgwUploader = new NgwUploader({
-      baseUrl: `https://${targetNGWURL}`,
+      baseUrl: targetNGWURL,
       auth: { login: targetLogin, password: targetPassword }
     });
 

@@ -8,7 +8,12 @@ const ru = {
       authHeader: 'Авторизация',
       username: 'Имя пользователя',
       password: 'Пароль',
-      preview: 'Предпросмотр'
+      preview: 'Предпросмотр',
+      error: {
+        required: 'Обязательное поле',
+        url: 'Должен быть валидным URL',
+        layerId: 'Должно быть числом'
+      }
     },
     targetForm: {
       header: 'Целевой сервер',
@@ -16,7 +21,12 @@ const ru = {
       targetGroupId: 'ID целевой группы',
       authHeader: 'Авторизация',
       username: 'Имя пользователя',
-      password: 'Пароль'
+      password: 'Пароль',
+      error: {
+        required: 'Обязательное поле',
+        url: 'Должен быть валидным URL',
+        groupId: 'Должно быть числом'
+      }
     },
     submit: 'Выполнить',
     submitPending: 'Выполняется...',

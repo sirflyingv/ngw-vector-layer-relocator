@@ -1,15 +1,9 @@
 import React, { useState } from 'react';
-import {
-  Button,
-  Form,
-  Card,
-  Container,
-  Accordion,
-  Alert
-} from 'react-bootstrap';
+import { Button, Form, Card, Container, Alert } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
+import PreviewMap from './PreviewMap';
 
 import { useTranslation } from 'react-i18next';
 
@@ -18,6 +12,7 @@ function App() {
   const [isPending, setIsPending] = useState<boolean>();
   const [isFinished, setIsFinished] = useState<boolean>(false);
   const [isFailed, setIsFailed] = useState<boolean>();
+  const [previewLoaded, setpreviewLoaded] = useState<boolean>(false);
   const [messageKey, setMessageKey] = useState<string>();
 
   const messageMapping: { [key: string]: string } = {
@@ -31,29 +26,34 @@ function App() {
 
   const formik = useFormik({
     initialValues: {
-      sourceNgwURL: 'demo.nextgis.com',
+      sourceNgwURL: 'https://demo.nextgis.com',
       sourceLayerId: '5573',
-      sourceLogin: '',
-      sourcePassword: '',
-      targetNGWURL: 'sandbox.nextgis.com',
-      targetGroupId: '2962',
-      targetLogin: '',
-      targetPassword: ''
+      targetNGWURL: 'https://sandbox.nextgis.com',
+      targetGroupId: '2962'
     },
     validationSchema: yup.object({
-      sourceNgwURL: yup.string().required(), // todo process URL as URL
-      sourceLayerId: yup.number().required(),
-      sourceLogin: yup.string(),
-      sourcePassword: yup.string(),
-      targetNGWURL: yup.string().required(),
-      targetGroupId: yup.number().required(),
-      targetLogin: yup.string(),
-      targetPassword: yup.string()
+      sourceNgwURL: yup
+        .string()
+        .url(t('sourceForm.error.url'))
+        .required(t('sourceForm.error.required')),
+      sourceLayerId: yup
+        .number()
+        .typeError(t('targetForm.error.groupId'))
+        .required(t('sourceForm.error.required')),
+      targetNGWURL: yup
+        .string()
+        .url(t('targetForm.error.url'))
+        .required(t('targetForm.error.required')),
+      targetGroupId: yup
+        .number()
+        .typeError(t('targetForm.error.groupId'))
+        .required(t('targetForm.error.required'))
     }),
     onSubmit: async (data) => {
       setIsFinished(false);
       try {
         setIsPending(true);
+        setpreviewLoaded(false);
         const res = await axios.post('/transfer', data);
         setIsPending(false);
         setIsFinished(true);
@@ -85,15 +85,42 @@ function App() {
   });
 
   const previewLayer = async () => {
-    const vectorLayer = await axios.post('/preview', formik.values);
-    console.log(vectorLayer);
+    setIsFinished(false);
+    try {
+      setIsPending(true);
+      const res = await axios.post('/preview', formik.values);
+      setIsPending(false);
+
+      if (res.data.status === 'success') {
+        setpreviewLoaded(true);
+      } else if (res.data.status === 'failed') {
+        setIsFinished(true);
+        setIsFailed(true);
+        const { message } = res.data;
+        setMessageKey(messageMapping[message || 'other']);
+      }
+    } catch (error) {
+      setIsFinished(true);
+      setIsFailed(true);
+
+      // some tricky workaround on TypeScript catch(error) nuances
+      let message;
+      if (error instanceof Error) message = error.message;
+      else message = String(error);
+      if (message === 'Network Error') {
+        setMessageKey('networkError');
+      } else {
+        setMessageKey('other');
+      }
+      setIsPending(false);
+    }
   };
 
   return (
     <div className="d-flex flex-column h-100">
-      <div className="row justify-content-center align-content-center h-100">
+      <div className="row justify-content-center align-content-top h-100">
         <div className="col-12 col-md-8 col-xxl-6">
-          <Container className="my-4 overflow-hidden rounded shadow">
+          <Container className="my-5 overflow-hidden rounded shadow">
             <div className="d-flex justify-content-center pt-3">
               <h1>{t('header')}</h1>
             </div>
@@ -113,8 +140,15 @@ function App() {
                         onBlur={formik.handleBlur}
                         type="text"
                         required
+                        isInvalid={
+                          formik.touched.sourceNgwURL &&
+                          !!formik.errors.sourceNgwURL
+                        }
                         placeholder={'demo.nextgis.com'} // add to locales
                       />
+                      <Form.Control.Feedback type="invalid">
+                        {formik.errors.sourceNgwURL}
+                      </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-3 p-1" controlId="sourceLayerId">
                       <Form.Label>{t('sourceForm.sourceLayerId')}</Form.Label>
@@ -125,52 +159,23 @@ function App() {
                         onBlur={formik.handleBlur}
                         type="text"
                         required
+                        isInvalid={
+                          formik.touched.sourceLayerId &&
+                          !!formik.errors.sourceLayerId
+                        }
                         placeholder={'1337'} // add to locales
                       />
+                      <Form.Control.Feedback type="invalid">
+                        {formik.errors.sourceLayerId}
+                      </Form.Control.Feedback>
                     </Form.Group>
-                    <Accordion className="mb-3 p-1">
-                      <Accordion.Item eventKey="0">
-                        <Accordion.Header>
-                          {t('sourceForm.authHeader')}
-                        </Accordion.Header>
-                        <Accordion.Body>
-                          <Form.Group
-                            className="mb-3 p-1"
-                            controlId="sourceLogin"
-                          >
-                            <Form.Label>{t('sourceForm.username')}</Form.Label>{' '}
-                            <Form.Control
-                              name="sourceLogin"
-                              onChange={formik.handleChange}
-                              value={formik.values.sourceLogin}
-                              onBlur={formik.handleBlur}
-                              type="text"
-                              placeholder="" // add to locales
-                            />
-                          </Form.Group>
-                          <Form.Group
-                            className="mb-3 p-1"
-                            controlId="sourcePassword"
-                          >
-                            <Form.Label>{t('sourceForm.password')}</Form.Label>
-                            <Form.Control
-                              name="sourcePassword"
-                              onChange={formik.handleChange}
-                              value={formik.values.sourcePassword}
-                              onBlur={formik.handleBlur}
-                              type="password"
-                              placeholder="" // add to locales
-                            />
-                          </Form.Group>
-                        </Accordion.Body>
-                      </Accordion.Item>
-                    </Accordion>
                     <div className="p-1">
                       <Button
                         onClick={previewLayer}
                         type="button"
                         className="mb-2 w-100"
                         variant="secondary"
+                        disabled={isPending || previewLoaded}
                       >
                         {t('sourceForm.preview')}
                       </Button>
@@ -190,8 +195,15 @@ function App() {
                         onBlur={formik.handleBlur}
                         type="text"
                         required
+                        isInvalid={
+                          formik.touched.targetNGWURL &&
+                          !!formik.errors.targetNGWURL
+                        }
                         placeholder={'sandbox.nextgis.com'} // add to locales
                       />
+                      <Form.Control.Feedback type="invalid">
+                        {formik.errors.targetNGWURL}
+                      </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-3 p-1" controlId="targetGroupId">
                       <Form.Label>{t('targetForm.targetGroupId')}</Form.Label>
@@ -202,57 +214,16 @@ function App() {
                         onBlur={formik.handleBlur}
                         type="text"
                         required
+                        isInvalid={
+                          formik.touched.targetGroupId &&
+                          !!formik.errors.targetGroupId
+                        }
                         placeholder={'2962'} // add to locales
                       />
+                      <Form.Control.Feedback type="invalid">
+                        {formik.errors.targetGroupId}
+                      </Form.Control.Feedback>
                     </Form.Group>
-                    <Accordion className="mb-3 p-1">
-                      <Accordion.Item eventKey="0">
-                        <Accordion.Header>
-                          {t('targetForm.authHeader')}
-                        </Accordion.Header>
-                        <Accordion.Body>
-                          <Form.Group
-                            className="mb-3 p-1"
-                            controlId="targetLogin"
-                          >
-                            <Form.Label>{t('targetForm.username')}</Form.Label>{' '}
-                            <Form.Control
-                              name="targetLogin"
-                              onChange={formik.handleChange}
-                              value={formik.values.targetLogin}
-                              onBlur={formik.handleBlur}
-                              type="text"
-                              placeholder="" // add to locales
-                            />
-                          </Form.Group>
-                          <Form.Group
-                            className="mb-3 p-1"
-                            controlId="targetPassword"
-                          >
-                            <Form.Label>{t('targetForm.password')}</Form.Label>
-                            <Form.Control
-                              name="targetPassword"
-                              onChange={formik.handleChange}
-                              value={formik.values.targetPassword}
-                              onBlur={formik.handleBlur}
-                              type="password"
-                              placeholder="" // add to locales
-                            />
-                          </Form.Group>
-                        </Accordion.Body>
-                      </Accordion.Item>
-                    </Accordion>
-                    {/* <div className="p-1">
-                      <Button
-                        // onClick={previewLayer}
-                        type="button"
-                        className="mb-2 w-100"
-                        variant="secondary"
-                        disabled={!isFinished && !isFailed}
-                      >
-                        {'ff'}
-                      </Button>
-                    </div> */}
                   </Card.Body>
                 </Card>
               </div>
@@ -261,9 +232,9 @@ function App() {
                   className="mt-3 w-100"
                   variant="primary"
                   type="submit"
-                  disabled={isPending}
+                  disabled={isPending || !formik.isValid}
                 >
-                  {isPending ? t('submitPending') : t('submit')}
+                  {t('submit')}
                 </Button>
               </div>
               {isFinished ? (
@@ -275,6 +246,9 @@ function App() {
                 </Alert>
               ) : null}
             </Form>
+            {previewLoaded ? (
+              <PreviewMap name={'pippa'} layer={{ pip: 'ppa' }} />
+            ) : null}
           </Container>
         </div>
       </div>
